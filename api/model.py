@@ -26,7 +26,7 @@ class DataModel(Base):
     country_name = Column(String(64), nullable=False)
     country_code = Column(String(3), ForeignKey('country.country_code'), primary_key=True, nullable=False)
     indicator_name = Column(String(256), nullable=False)
-    series_code = Column(String(64), ForeignKey('series.series_code'), primary_key=True, nullable=False)
+    indicator_code = Column(String(64), ForeignKey('series.series_code'), primary_key=True, nullable=False)
 
 class FootnoteModel(Base):
     __tablename__ = 'footnote'
