@@ -126,7 +126,7 @@ CREATE TABLE series_time (
     PRIMARY KEY (series_code, year)
 );
 
-
+-- Copying data from CSV files into database
 COPY country FROM '/data/WDICountry.csv' DELIMITER ',' CSV HEADER;
 INSERT INTO country(country_code, short_name, table_name, long_name)
 VALUES ('INX', 'Not classified', 'Not classified', 'Not classified');
