@@ -1,5 +1,4 @@
 from sqlalchemy import Column, Integer, ForeignKey, String, Text
-from sqlalchemy.orm import relationship
 from database import Base, engine
 
 class CountryModel(Base):

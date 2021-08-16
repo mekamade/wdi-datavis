@@ -1,7 +1,6 @@
 
 import graphene
 from graphene_sqlalchemy import SQLAlchemyConnectionField, SQLAlchemyObjectType
-from sqlalchemy.orm import column_property
 from model import *
 
 class Country(SQLAlchemyObjectType):
@@ -34,22 +33,42 @@ class SeriesTime(SQLAlchemyObjectType):
         model = SeriesTimeModel
         interfaces = (graphene.relay.Node, )
 
-# class DataResult(graphene.ObjectType):
-#     country_code = graphene.String()
-#     indicator_code = graphene.String()
-#     yr2008 = graphene.Float()
-#     yr2009 = graphene.Float()
-#     yr2010 = graphene.Float()
-
 class Query(graphene.ObjectType):
-
     node = graphene.relay.Node.Field()
-    country = graphene.Field(Country, country_code=graphene.String(3))
+
+    country = graphene.Field(
+        Country,
+        country_code=graphene.String()
+    )
     all_countries = graphene.List(Country)
-    indicator = graphene.Field(Series, indicator_code=graphene.String(64))
+
+    indicator = graphene.Field(
+        Series,
+        indicator_code=graphene.String()
+    )
     all_indicators = graphene.List(Series)
-    footnote = graphene.Field(Footnote, country_code=graphene.String(3), indicator_code=graphene.String(64), year=graphene.Int())
-    indicator_data = graphene.List(Data, indicator_code=graphene.String(64), country_codes=graphene.List(graphene.String))
+
+    country_indicator_info = graphene.Field(
+        CountrySeries,
+        country_code=graphene.String(),
+        indicator_code=graphene.String()
+    )
+    indicator_data = graphene.List(
+        Data,
+        indicator_code=graphene.String(),
+        country_codes=graphene.List(graphene.String)
+    )
+    footnote = graphene.Field(
+        Footnote,
+        country_code=graphene.String(),
+        indicator_code=graphene.String(),
+        year=graphene.Int()
+    )
+    indicator_year_info = graphene.Field(
+        SeriesTime,
+        indicator_code=graphene.String(),
+        year=graphene.Int()
+    )
 
     def resolve_country(root, info, country_code):
         query = Country.get_query(info)
@@ -67,26 +86,23 @@ class Query(graphene.ObjectType):
         query = Series.get_query(info)
         return query.all()
 
+    def resolve_country_indicator_info(root, info, country_code, indicator_code):
+        query = CountrySeries.get_query(info)
+        return query.get((country_code, indicator_code))
+
+    def resolve_indicator_data(root, info, indicator_code, country_codes):
+        query = Data.get_query(info)
+        return query.filter((DataModel.indicator_code == indicator_code) &
+                             DataModel.country_code.in_(country_codes))
+
     def resolve_footnote(root, info, country_code, indicator_code, year):
         query = Footnote.get_query(info)
         query_year = f"yr{year}"
         return query.get((country_code, indicator_code, query_year))
 
+    def resolve_indicator_year_info(root, info, indicator_code, year):
+        query = SeriesTime.get_query(info)
+        query_year = f"yr{year}"
+        return query.get((indicator_code, query_year))
 
-    def resolve_indicator_data(root, info, indicator_code, country_codes):
-        query = Data.get_query(info)
-        # selected_years = []
-        # for year in range(start_year, end_year+1):
-        #     selected_years.append(getattr(DataModel, f"yr{year}"))
-        # years = column_property(
-        #     select([func.CONCAT(*selected_years)])
-        # )
-        # columns_required = [DataModel.country_code, DataModel.indicator_code]
-        #
-        # return query.with_entities(*columns_required).filter((DataModel.indicator_code == indicator_code) &
-        #                     DataModel.country_code.in_(country_codes))
-        return query.filter((DataModel.indicator_code == indicator_code) &
-                             DataModel.country_code.in_(country_codes))
-
-
-schema = graphene.Schema(query=Query, types=[Country])
+schema = graphene.Schema(query=Query)
