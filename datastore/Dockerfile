@@ -8,6 +8,6 @@ ENV POSTGRES_DB wdi_worldbank
 
 ADD processed /data/
 
-ADD databaseLoad.sql /docker-entrypoint-initdb.d/
+ADD init/databaseLoad.sql /docker-entrypoint-initdb.d/
 
 EXPOSE 5432
