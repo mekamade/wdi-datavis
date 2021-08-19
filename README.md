@@ -1,18 +1,25 @@
 # World Bank Data Visualization : Installation Guide
-Basic data visualization webapp for 'World Development Indicators' from the World Bank. The app is build in a Mac environment. Please use appropriate equivalent tools to `brew`, `curl`, `unzip` etc. if you
+Basic data visualization webapp for 'World Development Indicators' from the World Bank. The app is build on a Mac environment. Please use appropriate equivalent tools to `brew`, `curl`, `unzip` etc. 
 
 ## Prerequisites
 - [Docker](https://docs.docker.com/desktop/) (requires Docker Engine, Docker Compose, Docker CLI)
 - Python 3 with virtual env installed : `python3 -m pip install --user virtualenv`
 
-Manual Build:
+Only for Manual Build:
 - Node : `brew install node` (This will install `npm` as well)
 
 ## Downloading Data & Preprocessing
 Preprocessing steps are described in the report.
 - Please change the directory to `./datastore/`
 - Download and unzip the dataset here, make sure the CSV files are stored in `.datastore/WDI_csv/`
-- Download & extract manually if needed
+- Download & extract manually if needed as downlink from World Bank's website seems unreliable. Also, the filenames have been changing.
+- Ensure the following file names with case sensitivity:
+    - WDICountry.csv
+    - WDISeries.csv
+    - WDICountry-Series.csv
+    - WDIData.csv
+    - WDIFootNote.csv
+    - WDISeries-Time.csv
 ```
 cd datastore
 curl -L -O https://databank.worldbank.org/data/download/WDI_csv.zip
@@ -31,10 +38,13 @@ python preprocess.py
 - This should create this directory with the processed CSVs: `.datastore/processed/`
 
 ## Method 1: Docker Compose 
+- Run this at the root directory
 ```
 docker-compose up --build
 ```
-
+- Once the containers are built:
+    - The API should be accessible at `localhost:5000/graphql` on browsers with an interface
+    - The frontend should be accessible at `localhost:3000`
 ## Method 2: Manual (still uses Docker for the datastore)
 ### Datastore
 - Change directory to `./datastore` and build the Docker Image
@@ -69,10 +79,6 @@ python app.py
 ```
 cd frontend
 npm install
-```
-- We need to run a proxy to access the API without CORS errors, run this in an alternate terminal window
-```
-lcp --proxyUrl http://localhost:5000   
 ```
 - Run the Web App
 ```
