@@ -39,6 +39,7 @@ python preprocess.py
 
 ## Method 1: Docker Compose 
 - Run this at the root directory
+- Ensure that ports `5432`, `3000` & `5000` are free on localhost
 ```
 docker-compose up --build
 ```
