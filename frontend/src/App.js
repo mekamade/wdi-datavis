@@ -1,5 +1,4 @@
 import React from 'react';
-
 import Header from 'components/Header'
 import DataPanel from 'components/DataPanel';
 import { ApolloClient, ApolloProvider, InMemoryCache, HttpLink } from '@apollo/client';

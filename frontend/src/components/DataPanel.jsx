@@ -1,11 +1,13 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
+
 import Grid from '@material-ui/core/Grid';
-import { DataStoreScope } from 'utils/DataStore';
+import Paper from '@material-ui/core/Paper';
+import { makeStyles } from '@material-ui/core/styles';
+
 import DataForm from 'components/widgets/DataForm';
 import DataTable from 'components/widgets/DataTable';
 import DataChart from 'components/widgets/DataChart';
+import { DataStoreScope } from 'utils/DataStore';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -24,6 +26,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+// App Data Panel that dictates structure of the interface
 export default function DataPanel() {
     const classes = useStyles();
 

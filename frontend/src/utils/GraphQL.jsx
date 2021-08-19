@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-
+// List of GraphQL queries
 
 export const GET_FORM_DATA = gql`
     query {

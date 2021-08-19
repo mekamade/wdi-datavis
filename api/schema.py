@@ -36,6 +36,7 @@ class SeriesTime(SQLAlchemyObjectType):
 class Query(graphene.ObjectType):
     node = graphene.relay.Node.Field()
 
+    # Define all types here
     country = graphene.Field(
         Country,
         country_code=graphene.String()
@@ -74,6 +75,7 @@ class Query(graphene.ObjectType):
         year=graphene.Int()
     )
 
+    # Define all queries here
     def resolve_country(root, info, country_code):
         query = Country.get_query(info)
         return query.get(country_code)

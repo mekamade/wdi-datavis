@@ -17,7 +17,7 @@ import {
     Legend,
  } from 'recharts';
 
-import { randomRGB } from 'Utils';
+import { randomRGB } from 'utils/Utils';
 import TimelineIcon from '@material-ui/icons/Timeline';
 import EqualizerIcon from '@material-ui/icons/Equalizer';
   
@@ -39,7 +39,8 @@ export default function DataChart() {
                             state.chart_data.slice(state.query.start_year.key, state.query.end_year.key+1)
                         : []
                         } 
-                        margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+                        margin={{ top: 20, right: 0, left: 30, bottom: 0 }}
+                        >
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="year" />
                     <YAxis />
@@ -60,8 +61,9 @@ export default function DataChart() {
                             state.chart_data.slice(state.query.start_year.key, state.query.end_year.key+1)
                         : []
                         } 
-                        margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
-                        <XAxis dataKey="name" />
+                        margin={{ top: 20, right: 0, left: 30, bottom: 0 }}
+                        >
+                        <XAxis dataKey="year" />
                         <YAxis />
                         <CartesianGrid strokeDasharray="3 3" />
                         <Tooltip />

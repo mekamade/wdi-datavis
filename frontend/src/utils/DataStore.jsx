@@ -2,6 +2,8 @@ import React, { createContext, useContext, useReducer } from 'react';
 
 const DataStoreContext = createContext(null);
 
+// Global State Data Store with useContext & useReduce
+
 export function useDataStoreContext() {
     return useContext(DataStoreContext);
 }

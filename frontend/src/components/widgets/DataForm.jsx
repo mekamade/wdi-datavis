@@ -1,27 +1,39 @@
 import React, { useState, useEffect } from 'react';
+
+import Alert from '@material-ui/lab/Alert';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
 import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
 import Popover from '@material-ui/core/Popover';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 
-import { useDataStoreContext } from 'utils/DataStore';
-import { useQuery, useLazyQuery } from '@apollo/client';
-import { generateYearList } from 'Utils';
 import ShareIcon from '@material-ui/icons/Share';            
 import TrendingUpIcon from '@material-ui/icons/TrendingUp';
-import { GET_DATA, GET_FORM_DATA } from 'utils/GraphQL';
-import Alert from '@material-ui/lab/Alert';
 
 import qs from "qs";
 import { createBrowserHistory } from "history";
+import { useQuery, useLazyQuery } from '@apollo/client';
 
+import { generateYearList } from 'utils/Utils';
+import { GET_DATA, GET_FORM_DATA } from 'utils/GraphQL';
+import { useDataStoreContext } from 'utils/DataStore';
+
+// Defining range of year selection
 const MIN_YEAR = 1960;
 const MAX_YEAR = 2020;
 
+const useStyles = makeStyles((theme) => ({
+    typography: {
+      padding: theme.spacing(2),
+    },
+  }));
+  
+
 export default function DataForm() {
+    const classes = useStyles();
     const [state, dispatch] = useDataStoreContext();
     const history = createBrowserHistory();
 
@@ -39,18 +51,18 @@ export default function DataForm() {
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
 
+    // Interpret parameters from URL
     useEffect(() => {
         const filterParams = history.location.search.substr(1);
         const params = qs.parse(filterParams);
-        if (params.ic) {
-            const indicator = formData.allIndicators.filter(x => {return x.seriesCode === params.ic})[0];
-            console.log(indicator);
+        if (params.ind) {
+            const indicator = formData.allIndicators.filter(x => {return x.seriesCode === params.ind})[0];
             if (indicator) {
                 dispatch({type: 'set_query_indicator', payload: indicator});
             }
         }
-        if (params.c) {
-            const country_codes = params.c.split(',');
+        if (params.ctry) {
+            const country_codes = params.ctry.split(',');
             const countries = country_codes.map((code) => (formData.allCountries.filter(x => {return x.countryCode === code})[0]));
             if (!countries.includes(undefined)){
                 dispatch({type: 'set_query_countries', payload: countries});
@@ -78,8 +90,14 @@ export default function DataForm() {
                 dispatch({type: 'set_query_end_year', payload: null});
             }
         }
+        if (params.chart) {
+            if (['line', 'bar'].includes(params.chart)){
+                dispatch({type: 'set_chart_type', payload: params.chart});
+            }
+        }
     }, [formData]);
 
+    // Update options for end year, once start year is selected. 
     useEffect(() => {
         if (state.query.start_year) {
             setEndYearOptions(allYearOptions.slice(state.query.start_year.key))
@@ -88,14 +106,16 @@ export default function DataForm() {
         }
     }, [state.query.start_year])
 
+    // Update options for start year, once end year is selected. 
     useEffect(() => {
         if (state.query.end_year) {
-            setStartYearOptions(allYearOptions.slice(0, state.query.end_year.key))
+            setStartYearOptions(allYearOptions.slice(0, state.query.end_year.key+1))
         } else {
             setStartYearOptions(allYearOptions)
         }
     }, [state.query.end_year])
 
+    // Fetch indicatorData when indicatorCode / countries is modified & is valid.
     useEffect(() => {
         if (state.query.indicator && state.query.countries){
             const payload = { 
@@ -111,6 +131,7 @@ export default function DataForm() {
         }
     }, [state.query.indicator, state.query.countries])
 
+    // Once data is returned from fetch, process it and store it in table_data & chart_data. 
     useEffect(() => {
         if (data) {
             let chart_data = generateYearList({startYear: MIN_YEAR, endYear: MAX_YEAR});
@@ -122,6 +143,7 @@ export default function DataForm() {
         }
     }, [data])
 
+    // If start year / end year is modified, update range of years. 
     useEffect(() => {
         if (state.query.start_year && state.query.end_year) {
             const payload = allYearOptions.slice(state.query.start_year.key, state.query.end_year.key+1)
@@ -129,16 +151,17 @@ export default function DataForm() {
         } else {
             dispatch({type: 'set_query_years', payload: []})
         }
-    }, [state.query.start_year, state.query.end_year, state.query.year_stepper])
+    }, [state.query.start_year, state.query.end_year])
 
-
+    // Generate share url from global state. 
     const generateUrl = (event) => {
         const baseUrl = window.location.origin;
         const indicatorCode = state.query.indicator.seriesCode;
         const countryCodes = state.query.countries.map((x) => x.countryCode).join(',');
         const startYear = state.query.start_year.year;
         const endYear = state.query.end_year.year;
-        const url = `${baseUrl}/?ic=${indicatorCode}&c=${countryCodes}&start=${startYear}&end=${endYear}`
+        const chartType = state.settings.chart_type;
+        const url = `${baseUrl}/?ind=${indicatorCode}&ctry=${countryCodes}&start=${startYear}&end=${endYear}&chart=${chartType}`
         navigator.clipboard.writeText(url);
         setAnchorEl(event.currentTarget);
     }
@@ -146,7 +169,6 @@ export default function DataForm() {
     const handleClose = () => {
         setAnchorEl(null);
       };
-
 
     return (
         <React.Fragment>
@@ -164,7 +186,7 @@ export default function DataForm() {
                         autoHighlight
                         options={formData.allIndicators}
                         getOptionLabel={(option) => ( option ? option.indicatorName : "")}
-                        getOptionSelected={(option, value) =>(option === value) }
+                        getOptionSelected={(option, value) =>(option.seriesCode === value.seriesCode) }
                         fullWidth
                         value={state.query.indicator}
                         onChange={(e, newValue) => {
@@ -210,7 +232,7 @@ export default function DataForm() {
                     <Autocomplete
                         options={startYearOptions}
                         getOptionLabel={(option) => option.year.toString()}
-                        getOptionSelected={(option, value) =>(option === value) }
+                        getOptionSelected={(option, value) =>(option.year === value.year) }
                         fullWidth
                         value={state.query.start_year}
                         onChange={(event, newValue) => {
@@ -229,7 +251,7 @@ export default function DataForm() {
                     <Autocomplete
                         options={endYearOptions}
                         getOptionLabel={(option) => option.year.toString()}
-                        getOptionSelected={(option, value) =>(option === value) }
+                        getOptionSelected={(option, value) =>(option.year === value.year) }
                         fullWidth
                         value={state.query.end_year}
                         onChange={(event, newValue) => {
@@ -277,7 +299,7 @@ export default function DataForm() {
                     horizontal: 'center',
                 }}
             >
-            <Typography>Copied!</Typography>
+            <Typography className={classes.typography}>Copied! 🎉</Typography>
         </Popover>
             </React.Fragment>
 
