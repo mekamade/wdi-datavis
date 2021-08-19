@@ -36,10 +36,10 @@ pip install -r requirements.txt
 python preprocess.py
 ```
 - This should create this directory with the processed CSVs: `.datastore/processed/`
+- Ensure that ports `5432`, `3000` & `5000` are free on localhost
 
 ## Method 1: Docker Compose 
 - Run this at the root directory
-- Ensure that ports `5432`, `3000` & `5000` are free on localhost
 ```
 docker-compose up --build
 ```
