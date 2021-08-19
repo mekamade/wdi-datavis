@@ -10,7 +10,7 @@ const createApolloClient = () => {
   const hostname = process.env.DOCKER_API ? process.env.DOCKER_API : "localhost:8010"
   return new ApolloClient({
     link: new HttpLink({
-      uri: `http://${hostname}/proxy/graphql`,
+      uri: `http://flask:5000/proxy/graphql`,
       headers: {}
     }),
     cache: new InMemoryCache(),

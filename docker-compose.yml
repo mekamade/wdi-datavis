@@ -15,20 +15,20 @@ services:
         - './datastore/processed:/data/'
   
     api:
-      container_name: flask-api
+      container_name: flask
       restart: always
       build:
         context: ./api
         dockerfile: Dockerfile
       ports:
-        - "5000:80"
+        - '5000:5000'
       volumes:
         - ./api:/usr/src/app
       depends_on:
         - "datastore"
   
     frontend:
-      container_name: react-app
+      container_name: react
       build:
         context: ./frontend
         dockerfile: Dockerfile
