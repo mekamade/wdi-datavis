@@ -134,4 +134,4 @@ COPY series FROM '/data/WDISeries.csv' DELIMITER ',' CSV HEADER;
 COPY country_series FROM '/data/WDICountry-Series.csv' DELIMITER ',' CSV HEADER;
 COPY data FROM '/data/WDIData.csv' DELIMITER ',' CSV HEADER;
 COPY footnote FROM '/data/WDIFootNote.csv' DELIMITER ',' CSV HEADER;
-COPY series_time FROM '/data/WDISeries-time.csv' DELIMITER ',' CSV HEADER;
+COPY series_time FROM '/data/WDISeries-Time.csv' DELIMITER ',' CSV HEADER;

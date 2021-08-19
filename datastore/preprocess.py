@@ -17,7 +17,7 @@ def main():
         'WDICountry-Series': extract_csv("WDI_csv/WDICountry-Series.csv"),
         'WDIData': extract_csv("WDI_csv/WDIData.csv"),
         'WDIFootNote': extract_csv("WDI_csv/WDIFootNote.csv"),
-        'WDISeries-time': extract_csv("WDI_csv/WDISeries-time.csv")
+        'WDISeries-Time': extract_csv("WDI_csv/WDISeries-Time.csv")
     }
 
     print("Removing stray trailing whitespaces on all data points...")
@@ -35,11 +35,11 @@ def main():
     tables['WDIData']['Indicator Code'] = tables['WDIData']['Indicator Code'].map(lambda x: x.upper())
     tables['WDIFootNote']['CountryCode'] = tables['WDIFootNote']['CountryCode'].map(lambda x: x.upper())
     tables['WDIFootNote']['SeriesCode'] = tables['WDIFootNote']['SeriesCode'].map(lambda x: x.upper())
-    tables['WDISeries-time']['SeriesCode'] = tables['WDISeries-time']['SeriesCode'].map(lambda x: x.upper())
+    tables['WDISeries-Time']['SeriesCode'] = tables['WDISeries-Time']['SeriesCode'].map(lambda x: x.upper())
 
     print("Ensuring all year values are lowercase...")
     # Make all Year values lower case
-    tables['WDISeries-time']['Year'] = tables['WDISeries-time']['Year'].map(lambda x: x.lower())
+    tables['WDISeries-Time']['Year'] = tables['WDISeries-Time']['Year'].map(lambda x: x.lower())
     tables['WDIFootNote']['Year'] = tables['WDIFootNote']['Year'].map(lambda x: x.lower())
 
     print("Patching duplicate primary keys...")
