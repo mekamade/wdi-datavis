@@ -2,8 +2,6 @@ FROM node:16-alpine
 
 WORKDIR /app
 
-ENV DOCKER_API localhost:5000
-
 ENV PATH /app/node_modules/.bin:$PATH
 
 COPY package.json ./
