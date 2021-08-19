@@ -40,6 +40,10 @@ class Query(graphene.ObjectType):
         Country,
         country_code=graphene.String()
     )
+    countries = graphene.List(
+        Country,
+        country_codes=graphene.List(graphene.String)
+    )
     all_countries = graphene.List(Country)
 
     indicator = graphene.Field(
@@ -73,6 +77,10 @@ class Query(graphene.ObjectType):
     def resolve_country(root, info, country_code):
         query = Country.get_query(info)
         return query.get(country_code)
+
+    def resolve_countries(root, info, country_codes):
+        query = Country.get_query(info)
+        return query.filter(CountryModel.country_code.in_(country_codes))
 
     def resolve_all_countries(root, info):
         query = Country.get_query(info)
